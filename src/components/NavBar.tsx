@@ -1,50 +1,32 @@
+import { LocalHospital } from "@mui/icons-material";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
-  Toolbar,
   Box,
+  Container,
   IconButton,
-  Typography,
-  Button,
   Menu,
   MenuItem,
-  Container,
+  Toolbar,
+  Typography,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useNavigate } from "react-router-dom";
-import React from "react";
-import { AccountCircle, LocalHospital } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const pages = {
-  routes: [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-    },
-    {
-      name: "Formulas de pacientes",
-      path: "/formulas",
-    },
-    {
-      name: "Promociones",
-      path: "/promotions",
-    },
-    {
-      name: "Perfil",
-      path: "/profile",
-    }
-  ],
-};
+
+const paginas = [
+  {
+    nombre: "Dashboard",
+    ruta: "/dashboard",
+  },
+  { nombre: "Formulas", ruta: "/formulas" },
+  { nombre: "Promociones", ruta: "/promotions" },
+];
 
 function NavBar() {
-  const { user, logout } = useAuth();
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const navigate = useNavigate(); // con esta constante hacemos la navegación entre rutas
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -57,79 +39,67 @@ function NavBar() {
     setAnchorElNav(null);
   };
 
+  const redirigir = (ruta: string) => {
+    navigate(ruta);
+  };
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  const handleNavigation = (page: string) => {
-    navigate(page);
-    handleCloseNavMenu()
-  }
-
   return (
-      <AppBar position="static">
-        <Container maxWidth="xl">
+    <AppBar sx={{ bgcolor: "#2A5EC9" }} position="static">
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <LocalHospital sx={{ display: { xs: 'none', md:'flex'}, mr: 1 }} />
-          <IconButton
-            size="large"
-            edge="start"
-            aria-label="menu"
-            sx={{ mr: 2, color: "white" }}
-          >
-            <MenuIcon />
-          </IconButton>
+          <LocalHospital sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
-            component={Link}
-            to="/"
-            sx={{ flexGrow: 1, color: "white", textDecoration: "none" }}
+            noWrap
+            component="a"
+            href="/home"
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              fontFamily: "Roboto",
+              fontWeight: 700,
+              color: "inherit",
+              textDecoration: "none",
+            }}
           >
-            MedTrack
+            MEDTRACK
           </Typography>
-          {user ? (
-            <>
-              <IconButton
-                size="large"
-                aria-label="acount of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-              >
-                <MenuItem>Perfil</MenuItem>
-                <MenuItem>Logout</MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <Button
-              color="inherit"
-              sx={{ color: "white" }}
-              component={Link}
-              to="/Login"
-            >
-              Login
-            </Button>
-          )}
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}></Box>
+          <IconButton
+            size="large"
+            aria-label="cuenta del usuario actual"
+            aria-controls="menu-appbar"
+            aria-hashpopup="true"
+            onClick={handleOpenNavMenu}
+            color="inherit"
+          >
+            <MenuIcon></MenuIcon>
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorElNav}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            open={Boolean(anchorElNav)}
+            onClose={handleCloseNavMenu}
+            sx={{ display: { xs: "block", md: "none" } }}
+          >
+            {paginas.map((page) => (
+              <MenuItem key={page.nombre} onClick={() => redirigir(page.ruta)}>
+                <Typography sx={{textAlign: 'center'}}>{page.nombre}</Typography>
+              </MenuItem>
+              ))}
+          </Menu>
         </Toolbar>
-        </Container>
-      </AppBar>
+      </Container>
+    </AppBar>
   );
 }
 
